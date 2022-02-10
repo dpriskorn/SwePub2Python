@@ -57,7 +57,6 @@ class Extractor(BaseModel):
                                       flush=True)
                             if current_line_number >= self.begin_line_number:
                                 article = SwepubArticle(raw_data=line)
-                                article.parse()
                                 df_article = article.export_dataframe()
                                 df_subject = pd.DataFrame()
                                 for subject in article.subjects:
