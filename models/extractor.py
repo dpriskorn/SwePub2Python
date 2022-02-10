@@ -36,6 +36,7 @@ class Extractor(BaseModel):
             raise ValueError("swepub_deduplicated_zipfile_path was None")
         if self.begin_line_number > self.stop_line_number:
             raise ValueError("cannot begin higher than the stop line number")
+        logger.info("Beginning extraction")
         start = time.time()
         articles_df = pd.DataFrame()
         subjects_df = pd.DataFrame()
