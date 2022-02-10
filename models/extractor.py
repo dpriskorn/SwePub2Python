@@ -27,7 +27,7 @@ class Extractor(BaseModel):
     swepub_deduplicated_zipfile_path: str = None
     article_pickle_filename: str = "articles.pkl.gz"
     subjects_pickle_filename: str = "subjects.pkl.gz"
-    stop_line_number: int = 100
+    stop_line_number: int = 100000
     begin_line_number: int = 1
     show_progress_every_x_line: int = 10
 
