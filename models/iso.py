@@ -1,7 +1,6 @@
 import logging
 
 from cache_to_disk import cache_to_disk  # type: ignore
-from pydantic import BaseModel
 from wikibaseintegrator import WikibaseIntegrator, wbi_config  # type: ignore
 from wikibaseintegrator.wbi_helpers import execute_sparql_query  # type: ignore
 
@@ -42,9 +41,7 @@ class IsoThreeLetterLanguageCode:
             {{
               ?item wdt:P219 "{code}".
             }}
-            """,
-            debug=False
-        )
+            """)
 
     @cache_to_disk(50)
     def __lookup_label_using_wbi__(self, item: str = None):
