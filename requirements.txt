@@ -1,4 +1,4 @@
 git+git://github.com/dpriskorn/cache_to_disk@ea25ce4ae74ca14cc14dd2542f2824aee7566281#egg=cache-to-disk
 langdetect~=1.0.9
 pandas~=1.3.5
-git+git://github.com/LeMyst/WikibaseIntegrator@v0.12.0.dev6#egg=wikibaseintegrator
+git+git://github.com/LeMyst/WikibaseIntegrator@v0.12.0rc1#egg=wikibaseintegrator
