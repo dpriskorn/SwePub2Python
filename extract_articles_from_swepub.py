@@ -13,7 +13,7 @@ from models.swepub.article import SwepubArticle
 
 # This script is intended to be run on the WMC Kubernetes cluster
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=config.loglevel)
 logger = logging.getLogger(__name__)
 
 # This file is huge. 1.3GB gzipped json
