@@ -40,11 +40,11 @@ class SwepubContributor:
                     if "givenName" in agent:
                         self.given_name = agent["givenName"]
                     else:
-                        logger.warning(f"givenName was not found in agent {agent}")
+                        logger.debug(f"givenName was not found in agent {agent}")
                     if "familyName" in agent:
                         self.family_name = agent["familyName"]
                     else:
-                        logger.warning(f"familyName was not found in agent {agent}")
+                        logger.debug(f"familyName was not found in agent {agent}")
                     if "identifiedBy" in agent:
                         identifiers: List[Dict[Any]] = agent["identifiedBy"]
                         for identifier in identifiers:
@@ -58,13 +58,13 @@ class SwepubContributor:
                                 elif identifier_type == "ORCID":
                                     self.orcid = value
                                 else:
-                                    logger.warning(f"unsupported identifier {identifier_type} in swepub agent")
+                                    logger.debug(f"unsupported identifier {identifier_type} in swepub agent")
                 elif affiliation_type == "Organization":
                     # print("agent:")
                     # pprint(agent)
                     self.affiliations.append(SwepubAffiliation(affiliation=agent))
                 else:
-                    logger.warning(f"unsupported affiliation type {affiliation_type} in swepub agent")
+                    logger.debug(f"unsupported affiliation type {affiliation_type} in swepub agent")
         if "hasAffiliation" in contributor_data:
             # This affiliation is not linked to a person. Why? Bad raw_data?
             affiliations_data = contributor_data["hasAffiliation"]

@@ -76,7 +76,7 @@ class SwepubArticle:
                                         logger.error(f"Could not detect language"
                                                      f"for summary: {first_summary}")
                                 else:
-                                    logger.warning("First summary was empty.")
+                                    logger.debug("First summary was empty.")
                         for summary in summaries:
                             if "label" in summary:
                                 self.abstracts.append(summary["label"])
@@ -133,7 +133,7 @@ class SwepubArticle:
                         elif identifier_type == "ISSN":
                             self.issn = value
                         else:
-                            logger.warning(f"Unsupported identifier_type {identifier_type} "
+                            logger.debug(f"Unsupported identifier_type {identifier_type} "
                                            f"detected with value {value}")
             else:
                 logger.info(f"No identifiedBy found under master for this article")
@@ -173,7 +173,7 @@ class SwepubArticle:
                                     logging.info(f"Title {title_label} found"
                                                  f"in work with unknown language")
                         else:
-                            logger.warning(f"No main title found for this article at {self.url}")
+                            logger.debug(f"No main title found for this article at {self.url}")
                     self.number_of_titles = len(self.titles)
 
         def __parse_subjects__(instance_of: Any):
