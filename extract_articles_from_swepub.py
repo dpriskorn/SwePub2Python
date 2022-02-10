@@ -2,13 +2,11 @@ import logging
 import os
 import time
 import zipfile
-from os.path import exists
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
-from pandas import DataFrame
 
+from helpers.dataframe import save_dataframe_to_pickle
 from models.swepub.article import SwepubArticle
 
 # This script is intended to be run on the WMC Kubernetes cluster
@@ -29,36 +27,6 @@ filename_prefix = "articles_710k-end"
 if begin_line_number > stop_line_number:
     raise ValueError("cannot begin higher than the stop line number")
 
-# There is a lot of bloat in their choice of specification.
-# E.g. titles of all the UKÄ codes could have been left out
-# and put into a Wikibase graph database instead and just linked
-# That would have saved a lot of space and bandwidth.
-
-# Suggestions for improvements of the data models:
-# 1) Add language codes to titles just as you do for summaries.
-
-
-def save_dataframe_to_pickle(previous_save_at_line_number: int = None,
-                             current_line_number: Union[int, str] = None,
-                             df: DataFrame = None):
-    if current_line_number is None:
-        raise ValueError("count was None")
-    if df is None:
-        raise ValueError("df was None")
-    # We use zfill to make sure they sort nice in the filesystem
-    if previous_save_at_line_number is None:
-        logger.debug("saving using begin_line_number")
-        pickle_filename = f"{filename_prefix}.{str(begin_line_number).zfill(6)}-{str(current_line_number).zfill(6)}.pkl.gz"
-    else:
-        logger.debug("saving using previous_saved_count")
-        pickle_filename = f"{filename_prefix}.{str(previous_save_at_line_number).zfill(6)}-{str(current_line_number).zfill(6)}.pkl.gz"
-    # We use the highest protocol which works in Python 3.9
-    # but perhaps not in earlier versions
-    if exists(pickle_filename):
-        print(f"{pickle_filename} already exists, overwriting", flush=True)
-    print(f"starting to save pickle {pickle_filename} now", flush=True)
-    df.to_pickle(pickle_filename, protocol=5)
-    print(f"saved to pickle {pickle_filename}", flush=True)
 
 
 start = time.time()
