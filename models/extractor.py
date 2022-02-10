@@ -48,7 +48,7 @@ class Extractor(BaseModel):
                     with z.open(filename) as f:
                         current_line_number = 1
                         for line in f:
-                            print(current_line_number)
+                            # print(current_line_number)
                             # print(line)
                             if current_line_number % self.show_progress_every_x_line == 0:
                                 progress = round((current_line_number - self.begin_line_number) * 100 /
@@ -81,5 +81,6 @@ class Extractor(BaseModel):
         print(f"saved to pickle {self.article_pickle_filename}", flush=True)
         print(f"starting to save subjects pickle {self.article_pickle_filename} now", flush=True)
         subjects_df.to_pickle(self.subjects_pickle_filename, protocol=5)
+        print(f"saved to pickle {self.subjects_pickle_filename}", flush=True)
         end = time.time()
         print(f"total duration: {round(end - start)}s")
