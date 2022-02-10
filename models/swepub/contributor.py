@@ -12,7 +12,7 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubContributor(BaseModel):
+class SwepubContributor:
     """This models the contributor aka author in the Swepub raw_data"""
     given_name: Optional[str] = None
     family_name: Optional[str] = None

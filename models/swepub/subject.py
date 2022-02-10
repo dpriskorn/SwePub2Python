@@ -19,8 +19,9 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubSubject(BaseModel):
+class SwepubSubject:
     """This models a Swepub subject aka topic"""
+    # FIXME update to pydantic
     # TODO decide whether to flesh out in own models UKACode or not
     data: Dict[str, str] = None
     label: Optional[str] = None
@@ -33,8 +34,7 @@ class SwepubSubject(BaseModel):
     matched_wikidata_qid: Optional[str] = None
     manually_matched: bool = False
 
-    # FIXME update to pydantic
-    def start(self,
+    def __init__(self,
                  data: Dict[str, str] = None,
                  label: str = None,
                  language_code: SwepubLanguage = None):

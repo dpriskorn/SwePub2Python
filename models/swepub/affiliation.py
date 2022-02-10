@@ -13,7 +13,7 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubAffiliation(BaseModel):
+class SwepubAffiliation:
     """This models the affiliation aka organization and departments of authors in the Swepub raw_data"""
     name: Optional[str] = None
     language_code: Optional[SwepubLanguage] = None
