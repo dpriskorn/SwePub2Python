@@ -14,7 +14,7 @@ logging.basicConfig(level=config.loglevel)
 # @click.command()
 def extract_to_dataframes():
     extractor = Extractor(swepub_deduplicated_zipfile_path='swepub-deduplicated.zip')
-    extractor.start()
+    extractor.extract()
 
 
 # @click.command()

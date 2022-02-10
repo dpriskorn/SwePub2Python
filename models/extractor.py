@@ -31,7 +31,7 @@ class Extractor(BaseModel):
     begin_line_number: int = 1
     show_progress_every_x_line: int = 100
 
-    def start(self):
+    def extract(self):
         if self.swepub_deduplicated_zipfile_path is None:
             raise ValueError("swepub_deduplicated_zipfile_path was None")
         if self.begin_line_number > self.stop_line_number:
@@ -58,16 +58,17 @@ class Extractor(BaseModel):
                             if current_line_number >= self.begin_line_number:
                                 article = SwepubArticle(raw_data=line)
                                 df_article = article.export_dataframe()
-                                df_subject = pd.DataFrame()
-                                for subject in article.subjects:
-                                    df_subject = df_subject.append(subject.export_dataframe())
-                                # add article id as index to all rows
-                                # https://www.geeksforgeeks.org/add-column-with-constant-value-to-pandas-dataframe/
-                                df_subject['id'] = pd.Series([article.id for x in range(len(df_subject.index))])
-                                if config.loglevel == logging.DEBUG:
-                                    print(df_subject.describe())
-                                    exit()
-                                subjects_df = subjects_df.append(df_subject)
+                                if article.subjects is not None:
+                                    df_subject = pd.DataFrame()
+                                    for subject in article.subjects:
+                                        df_subject = df_subject.append(subject.export_dataframe())
+                                    # add article id as index to all rows
+                                    # https://www.geeksforgeeks.org/add-column-with-constant-value-to-pandas-dataframe/
+                                    df_subject['id'] = pd.Series([article.id for x in range(len(df_subject.index))])
+                                    if config.loglevel == logging.DEBUG:
+                                        print(df_subject.describe())
+                                        exit()
+                                    subjects_df = subjects_df.append(df_subject)
                                 articles_df = articles_df.append(df_article)
                             elif current_line_number == self.stop_line_number:
                                 break
