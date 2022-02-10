@@ -18,7 +18,7 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubArticle(BaseModel):
+class SwepubArticle:
     """This class parses a Swepub article json into an object"""
     abstracts: Optional[List[str]] = None
     contributors: Optional[List[SwepubContributor]] = None
