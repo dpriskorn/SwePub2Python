@@ -1,8 +1,9 @@
 import logging
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 
-import pandas as pd
-from wikibaseintegrator import wbi_config
+import pandas as pd  # type: ignore
+from pydantic import BaseModel
+from wikibaseintegrator import wbi_config  # type: ignore
 
 import config
 from models.swepub.affiliation import SwepubAffiliation
@@ -11,13 +12,13 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubContributor:
-    """This models the contributor aka author in the Swepub data"""
-    given_name: str = None
-    family_name: str = None
+class SwepubContributor(BaseModel):
+    """This models the contributor aka author in the Swepub raw_data"""
+    given_name: Optional[str] = None
+    family_name: Optional[str] = None
     affiliations: List[SwepubAffiliation]
-    orcid: str = None
-    local_identifier: str = None
+    orcid: Optional[str] = None
+    local_identifier: Optional[str] = None
 
     def __init__(self, person_data: Any = None):
         if person_data is None:
@@ -28,7 +29,7 @@ class SwepubContributor:
 
     def __parse__(self, contributor_data):
         if contributor_data is None:
-            raise ValueError("data was None")
+            raise ValueError("raw_data was None")
         # pprint(person)
         if "agent" in contributor_data:
             # This designates the role of the agent
@@ -65,7 +66,7 @@ class SwepubContributor:
                 else:
                     logger.warning(f"unsupported affiliation type {affiliation_type} in swepub agent")
         if "hasAffiliation" in contributor_data:
-            # This affiliation is not linked to a person. Why? Bad data?
+            # This affiliation is not linked to a person. Why? Bad raw_data?
             affiliations_data = contributor_data["hasAffiliation"]
             # print("hasaffiliation:")
             # pprint(affiliation)
@@ -81,7 +82,7 @@ class SwepubContributor:
                         self.affiliations.append(
                             subaffiliation
                         )
-                # Save memory by deleting the json data
+                # Save memory by deleting the json raw_data
                 affiliation.subaffiliations = None
                 self.affiliations.append(
                     affiliation
@@ -102,5 +103,5 @@ class SwepubContributor:
             orcid=self.orcid,
             local_identifier=self.local_identifier,
         )
-        # The list around data is needed because we have scalar values
+        # The list around raw_data is needed because we have scalar values
         return pd.DataFrame(data=[data])

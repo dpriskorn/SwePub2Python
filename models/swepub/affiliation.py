@@ -1,9 +1,10 @@
 import logging
 from pprint import pprint
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
-import pandas as pd
-from wikibaseintegrator import wbi_config
+import pandas as pd  # type: ignore
+from pydantic import BaseModel
+from wikibaseintegrator import wbi_config  # type: ignore
 
 import config
 from models.swepub.language import SwepubLanguage
@@ -12,15 +13,15 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubAffiliation:
-    """This models the affiliation aka organization and departments of authors in the Swepub data"""
-    name: str = None
-    language_code: SwepubLanguage = None
+class SwepubAffiliation(BaseModel):
+    """This models the affiliation aka organization and departments of authors in the Swepub raw_data"""
+    name: Optional[str] = None
+    language_code: Optional[SwepubLanguage] = None
     local_identifier: str = None
     has_subaffiliation: bool = False
-    subaffiliations: List[Dict[str, Any]] = None
+    subaffiliations: Optional[List[Dict[str, Any]]] = None
     linked_to_person: bool
-    url: str = None
+    url: Optional[str] = None
 
     def __init__(
             self,
@@ -102,5 +103,5 @@ class SwepubAffiliation:
             linked_to_person=self.linked_to_person,
             url=self.url
         )
-        # The list around data is needed because we have scalar values
+        # The list around raw_data is needed because we have scalar values
         return pd.DataFrame(data=[data])

@@ -1,7 +1,7 @@
 import logging
 from os.path import exists
 
-import pandas as pd
+import pandas as pd  # type: ignore
 
 logger = logging.getLogger(__name__)
 

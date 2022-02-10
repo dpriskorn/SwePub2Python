@@ -1,8 +1,9 @@
 import logging
 
-from cache_to_disk import cache_to_disk
-from wikibaseintegrator import WikibaseIntegrator, wbi_config
-from wikibaseintegrator.wbi_helpers import execute_sparql_query
+from cache_to_disk import cache_to_disk  # type: ignore
+from pydantic import BaseModel
+from wikibaseintegrator import WikibaseIntegrator, wbi_config  # type: ignore
+from wikibaseintegrator.wbi_helpers import execute_sparql_query  # type: ignore
 
 import config
 from helpers.wdqs import extract_the_first_wikibase_value_from_a_wdqs_result_set
@@ -11,7 +12,7 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class IsoThreeLetterLanguageCode:
+class IsoThreeLetterLanguageCode(BaseModel):
     """Official ISO 639-2 support"""
     code: str = None
     # We use str instead of LanguageValue here to enable

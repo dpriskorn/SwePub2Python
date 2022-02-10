@@ -3,9 +3,10 @@ import logging
 from json import JSONDecodeError
 from typing import List, Optional, Dict, Any
 
-import pandas as pd
+import pandas as pd  # type: ignore
 from langdetect import detect, LangDetectException
-from wikibaseintegrator import wbi_config
+from pydantic import BaseModel
+from wikibaseintegrator import wbi_config  # type: ignore
 
 import config
 from models.swedish_higher_education_authority import UKACodeLevel
@@ -17,38 +18,39 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubArticle:
+class SwepubArticle(BaseModel):
     """This class parses a Swepub article json into an object"""
-    abstracts: List[str] = None
+    abstracts: Optional[List[str]] = None
     contributors: Optional[List[SwepubContributor]] = None
-    detected_abstract_language: str = None
-    doi: str = None
-    hdl: str = None  # What is this?
-    id: str = None
-    isbn: str = None
-    isi: str = None  # What is this?
-    issn: str = None
-    json: Dict[str, str] = None
-    libris_id: str = None
-    language_codes: List[SwepubLanguage] = None
-    unknown_local_identifier: str = None  # What is this?
-    patent_number: str = None
-    pmid: str = None
-    scopusid: str = None
-    titles: List[str] = None
-    topics: List[SwepubSubject] = None
-    url: str = None
+    detected_abstract_language: Optional[str] = None
+    doi: Optional[str] = None
+    hdl: Optional[str] = None  # What is this?
+    id: Optional[str] = None
+    isbn: Optional[str] = None
+    isi: Optional[str] = None  # What is this?
+    issn: Optional[str] = None
+    # json: Optional[Dict[str, str]] = None
+    libris_id: Optional[str] = None
+    language_codes: Optional[List[SwepubLanguage]] = None
+    unknown_local_identifier: Optional[str] = None  # What is this?
+    patent_number: Optional[str] = None
+    pmid: Optional[str] = None
+    scopusid: Optional[str] = None
+    titles: Optional[List[str]] = None
+    subjects: Optional[List[SwepubSubject]] = None
+    url: Optional[str] = None
     number_of_abstracts: int = 0
     number_of_titles: int = 0
     number_of_language_codes: int = 0
     number_of_contributors: int = 0
+    raw_data: Any = None
 
-    def __init__(self, data: Any = None):
+    def parse(self):
         try:
-            data = json.loads(data)
-            self.__parse_json__(data=data)
+            deserialized_json_data = json.loads(self.raw_data)
+            self.__parse_json__(data=deserialized_json_data)
         except JSONDecodeError:
-            logger.error(f"Decoding of the json {data} failed")
+            logger.error(f"Decoding of the json {self.raw_data} failed")
 
     def __parse_json__(self, data: Any):
         def __parse_abstracts__(instance_of: Any):
@@ -176,13 +178,13 @@ class SwepubArticle:
         def __parse_subjects__(instance_of: Any):
             if config.parse_subjects:
                 if "subject" in instance_of:
-                    # This holds all the topics
+                    # This holds all the subjects
                     json_subjects: List[Dict[str, str]] = instance_of["subject"]
                     logger.info(f"Found {len(json_subjects)} subjects")
                     # logger.debug("subjects:")
                     # pprint(subjects)
                     if len(json_subjects) > 0:
-                        self.topics = []
+                        self.subjects = []
                         for subject_json_item in json_subjects:
                             logger.debug(f"subject type:{type(subject_json_item)}")
                             logger.debug(f"subject data:")
@@ -197,9 +199,9 @@ class SwepubArticle:
                                         # Inherit the language code
                                         language_code=subject.language_code
                                     )
-                                    self.topics.append(unnested_subject)
+                                    self.subjects.append(unnested_subject)
                             else:
-                                self.topics.append(subject)
+                                self.subjects.append(subject)
 
         master: Any = data["master"]
         __parse_identifiers__(master)
@@ -237,7 +239,7 @@ class SwepubArticle:
             )
 
     def export_dataframe(self):
-        # This is not an optimal way of storing the data in pandas
+        # This is not an optimal way of storing the raw_data in pandas
         # https://stackoverflow.com/questions/26792852/multiple-values-in-single-column-of-a-pandas-dataframe
         # https://stackoverflow.com/questions/26483254/python-pandas-insert-list-into-a-cell#47548471
         if config.parse_contributors and config.parse_titles and config.parse_abstracts:
@@ -268,11 +270,11 @@ class SwepubArticle:
                 patent_number=self.patent_number,
                 pmid=self.pmid,
                 scopusid=self.scopusid,
-                subjects=self.topics,  # list
+                subjects=self.subjects,  # list
                 url=self.url,
             )
-            # print(data)
-            # The list around data is needed because we have scalar values
+            # print(raw_data)
+            # The list around raw_data is needed because we have scalar values
             return pd.DataFrame(data=[data])  # , index=[count])
         else:
             logger.info("Exporting a minimal dataframe with identifiers and language codes")
@@ -290,35 +292,35 @@ class SwepubArticle:
                 scopusid=self.scopusid,
                 url=self.url,
             )
-            # print(data)
-            # The list around data is needed because we have scalar values
+            # print(raw_data)
+            # The list around raw_data is needed because we have scalar values
             return pd.DataFrame(data=[data])
 
     def non_swedish_subjects(self):
         """This filters out all subjects with the language_code=swe"""
-        if self.topics is not None:
-            return list(filter(lambda x: x.language_code != "swe", self.topics))
+        if self.subjects is not None:
+            return list(filter(lambda x: x.language_code != "swe", self.subjects))
         else:
             return list()
 
     def non_swedish_subjects_non_uka_subjects(self):
         """This filters out all subjects with the language_code=swe and any uka_code set"""
-        if self.topics is not None:
+        if self.subjects is not None:
             return list(filter(lambda x: (x.language_code != "swe" and
                                           x.uka_code is None),
-                               self.topics))
+                               self.subjects))
         else:
             return list()
 
     def non_swedish_uka_subjects(self):
         """This returns all subjects that have a UKÄ classification code but
         leaves out the ones with labels in Swedish"""
-        if self.topics is not None:
+        if self.subjects is not None:
             return list(
                 filter(
                     lambda x: (x.uka_code is not None and
                                x.language_code != "swe"),
-                    self.topics
+                    self.subjects
                 )
             )
         else:
@@ -334,13 +336,13 @@ class SwepubArticle:
             raise ValueError("level was None")
         if not isinstance(level, UKACodeLevel):
             raise ValueError("level was not a valid UKACodeLevel")
-        if self.topics is not None:
+        if self.subjects is not None:
             return list(
                 filter(
                     lambda x: (x.uka_code is not None and
                                x.language_code != "swe" and
                                x.uka_code_level == level),
-                    self.topics
+                    self.subjects
                 )
             )
         else:
@@ -348,8 +350,8 @@ class SwepubArticle:
 
     def uka_subjects(self):
         """This filters out all subjects that does not have a UKÄ classification code"""
-        if self.topics is not None:
-            return list(filter(lambda x: x.uka_code is not None, self.topics))
+        if self.subjects is not None:
+            return list(filter(lambda x: x.uka_code is not None, self.subjects))
         else:
             return list()
 
@@ -363,12 +365,12 @@ class SwepubArticle:
             raise ValueError("level was None")
         if not isinstance(level, UKACodeLevel):
             raise ValueError("level was not a valid UKACodeLevel")
-        if self.topics is not None:
+        if self.subjects is not None:
             return list(
                 filter(
                     lambda x: (x.uka_code is not None and
                                x.uka_code_level == level),
-                    self.topics
+                    self.subjects
                 )
             )
         else:

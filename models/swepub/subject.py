@@ -1,12 +1,13 @@
 import logging
 from time import sleep
-from typing import Dict, Set
+from typing import Dict, Set, Optional
 
-import pandas as pd
-from cache_to_disk import cache_to_disk
-from wikibaseintegrator import wbi_config
-from wikibaseintegrator.wbi_exceptions import MWApiError, SearchError
-from wikibaseintegrator.wbi_helpers import mediawiki_api_call_helper
+import pandas as pd  # type: ignore
+from cache_to_disk import cache_to_disk  # type: ignore
+from pydantic import BaseModel
+from wikibaseintegrator import wbi_config  # type: ignore
+from wikibaseintegrator.wbi_exceptions import MWApiError, SearchError  # type: ignore
+from wikibaseintegrator.wbi_helpers import mediawiki_api_call_helper  # type: ignore
 
 import config
 from helpers.caching import read_from_cache, add_to_cache
@@ -18,21 +19,22 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class SwepubSubject:
+class SwepubSubject(BaseModel):
     """This models a Swepub subject aka topic"""
-    data: Dict[str, str] = None
-    label: str = None
-    unnested_non_uka_labels: Set[str] = None
-    language_code: SwepubLanguage = None
     # TODO decide whether to flesh out in own models UKACode or not
-    uka_code: int = None
-    uka_code_level: UKACodeLevel = None
-    uka_label: str = None
+    data: Dict[str, str] = None
+    label: Optional[str] = None
+    unnested_non_uka_labels: Set[str] = None
+    language_code: Optional[SwepubLanguage] = None
+    uka_code: Optional[int] = None
+    uka_code_level: Optional[UKACodeLevel] = None
+    uka_label: Optional[str] = None
     uka_scheme: bool = False
-    matched_wikidata_qid: str = None
+    matched_wikidata_qid: Optional[str] = None
     manually_matched: bool = False
 
-    def __init__(self,
+    # FIXME update to pydantic
+    def start(self,
                  data: Dict[str, str] = None,
                  label: str = None,
                  language_code: SwepubLanguage = None):
@@ -45,9 +47,9 @@ class SwepubSubject:
             self.language_code = SwepubLanguage("und")
         else:
             if data is None:
-                raise ValueError("data was None")
+                raise ValueError("raw_data was None")
             else:
-                # We got data, handle it
+                # We got raw_data, handle it
                 self.data = data
                 self.__parse_json__(data=data)
         if config.lookup_topics_in_wd and self.label is not None:
@@ -271,5 +273,5 @@ class SwepubSubject:
             matched_wikidata_qid=self.matched_wikidata_qid,
             manually_matched=self.manually_matched,
         )
-        # The list around data is needed because we have scalar values
+        # The list around raw_data is needed because we have scalar values
         return pd.DataFrame(data=[data])

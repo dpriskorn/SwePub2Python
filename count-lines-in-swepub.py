@@ -17,7 +17,7 @@ name = f'{Path.home()}/WikidataMLSuggester/swepub-deduplicated.zip'
 # and put into a Wikibase graph database instead and just linked
 # That would have saved a lot of space and bandwidth.
 
-# Suggestions for improvements of the data models:
+# Suggestions for improvements of the raw_data models:
 # 1) Add language codes to titles just as you do for summaries.
 
 start = time.time()
