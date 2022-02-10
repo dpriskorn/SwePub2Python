@@ -29,7 +29,7 @@ class Extractor(BaseModel):
     subjects_pickle_filename: str = "subjects.pkl.gz"
     stop_line_number: int = 100
     begin_line_number: int = 1
-    show_progress_every_x_line: int = 100
+    show_progress_every_x_line: int = 10
 
     def extract(self):
         if self.swepub_deduplicated_zipfile_path is None:
