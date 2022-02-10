@@ -14,7 +14,7 @@ from models.swepub.article import SwepubArticle
 logger = logging.getLogger(__name__)
 
 
-class Extractor:
+class Extractor(BaseModel):
     """
     This class extracts from SwePub unspecified JSON into Python objects
     and stores them in a dataframe and pickles it to disk
