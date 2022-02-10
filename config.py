@@ -4,7 +4,7 @@ version = "0.1-dev0"
 wd_prefix = "http://www.wikidata.org/entity/"
 user = "User:So9q" # change to your username on Wikidata
 user_agent = f"SwePub2Python/{version} (User:{user})"
-loglevel = logging.INFO
+loglevel = logging.WARNING
 
 # Settings
 # Note: Parsing of identifiers is always done.
