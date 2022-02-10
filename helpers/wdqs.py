@@ -22,4 +22,4 @@ def extract_the_first_wikibase_value_from_a_wdqs_result_set(
             config.wd_prefix, ""
         )
     else:
-        logger.info("No QID found for this record")
+        logger.debug("No QID found for this record")

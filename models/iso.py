@@ -59,7 +59,7 @@ class IsoThreeLetterLanguageCode:
         # First we find the QID of the language by using SPARQL
         item = None
         result = self.__run_wdqs_query__(code=self.code)
-        logger.info(self.__lookup_label_using_wbi__.cache_info())
+        logger.debug(self.__lookup_label_using_wbi__.cache_info())
         if result is not None:
             logger.debug(f"wbi result:{result}")
             self.wikidata_qid = extract_the_first_wikibase_value_from_a_wdqs_result_set(
@@ -68,7 +68,7 @@ class IsoThreeLetterLanguageCode:
             )
         if self.wikidata_qid is not None:
             self.label = self.__lookup_label_using_wbi__(item=self.wikidata_qid)
-            logger.info(self.__lookup_label_using_wbi__.cache_info())
+            logger.debug(self.__lookup_label_using_wbi__.cache_info())
         else:
             # Hardcode workaround for issue #4
             if self.code == "ger":

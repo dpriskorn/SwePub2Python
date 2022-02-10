@@ -59,7 +59,7 @@ class SwepubAffiliation:
                             f"No language code found for the language {language} "
                             f"of this organization name")
                 else:
-                    logger.info(f"language was missing for this organization {self.name}, setting to 'und'")
+                    logger.debug(f"language was missing for this organization {self.name}, setting to 'und'")
                     self.language_code = SwepubLanguage(code="und")
                 if "identifiedBy" in affiliation:
                     identifiers = affiliation["identifiedBy"]

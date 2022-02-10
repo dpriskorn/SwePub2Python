@@ -72,7 +72,7 @@ class Extractor(BaseModel):
                                     subjects_df = subjects_df.append(df_subject)
                                 articles_df = articles_df.append(df_article)
                             elif current_line_number == self.stop_line_number:
-                                logger.info("Reached stop line number")
+                                logger.warning("Reached stop line number")
                                 break
                             else:
                                 break
