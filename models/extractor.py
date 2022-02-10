@@ -63,6 +63,7 @@ class Extractor(BaseModel):
                                 for subject in article.subjects:
                                     df_subject = df_subject.append(subject.export_dataframe())
                                 # add article id as index to all rows
+                                # https://www.geeksforgeeks.org/add-column-with-constant-value-to-pandas-dataframe/
                                 df_subject['id'] = pd.Series([article.id for x in range(len(df_subject.index))])
                                 if config.loglevel == logging.DEBUG:
                                     print(df_subject.describe())
