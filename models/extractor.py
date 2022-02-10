@@ -48,6 +48,7 @@ class Extractor(BaseModel):
                     with z.open(filename) as f:
                         current_line_number = 1
                         for line in f:
+                            print(current_line_number)
                             # print(line)
                             if current_line_number % self.show_progress_every_x_line == 0:
                                 progress = round((current_line_number - self.begin_line_number) * 100 /
@@ -71,10 +72,8 @@ class Extractor(BaseModel):
                                         exit()
                                     subjects_df = subjects_df.append(df_subject)
                                 articles_df = articles_df.append(df_article)
-                            elif current_line_number == self.stop_line_number:
+                            if current_line_number == self.stop_line_number:
                                 logger.warning("Reached stop line number")
-                                break
-                            else:
                                 break
                             current_line_number += 1
         print(f"starting to save article pickle {self.article_pickle_filename} now", flush=True)
