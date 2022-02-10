@@ -45,7 +45,8 @@ class SwepubArticle:
     number_of_contributors: int = 0
     raw_data: Any = None
 
-    def parse(self):
+    def __init__(self, raw_data):
+        self.raw_data = raw_data
         try:
             deserialized_json_data = json.loads(self.raw_data)
             self.__parse_json__(data=deserialized_json_data)
