@@ -42,7 +42,7 @@ class SwepubSubject:
             self.label = label
             self.language_code = language_code
         elif label is not None and language_code is None:
-            logger.warning("Language code was missing on this subject. Setting to UNDETERMINED")
+            logger.debug("Language code was missing on this subject. Setting to UNDETERMINED")
             self.label = label
             self.language_code = SwepubLanguage("und")
         else:
@@ -184,7 +184,7 @@ class SwepubSubject:
                     logging.info(f"Found UKÄ 2016 scheme")
                 else:
                     self.uka_scheme = False
-                    logger.warning(f"Did not recognize the scheme {scheme_code}")
+                    logger.debug(f"Did not recognize the scheme {scheme_code}")
         else:
             logger.info("No scheme in this subject")
             scheme_code = None
@@ -204,7 +204,7 @@ class SwepubSubject:
                 else:
                     logger.warning("Unrecognized length of UKÄ code: {code}")
             else:
-                logger.warning(f"Code {code} in unsupported scheme {scheme_code} detected")
+                logger.debug(f"Code {code} in unsupported scheme {scheme_code} detected")
         if "prefLabel" in data:
             code_label = data["prefLabel"]
             if self.uka_scheme:
@@ -229,7 +229,7 @@ class SwepubSubject:
                          f"{self.uka_label} in the language {self.language_code}")
         else:
             if self.uka_code:
-                logging.warning(
+                logging.debug(
                     f'Found UKÄ code but no label: {self.uka_code}')
 
     def __str__(self):
