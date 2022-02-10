@@ -12,7 +12,7 @@ wbi_config.config['USER_AGENT'] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
-class IsoThreeLetterLanguageCode(BaseModel):
+class IsoThreeLetterLanguageCode:
     """Official ISO 639-2 support"""
     code: str = None
     # We use str instead of LanguageValue here to enable
