@@ -98,10 +98,11 @@ class SwepubAffiliation:
         data = dict(
             name=self.name,
             local_identifier=self.local_identifier,
-            had_nested_affiliations=self.has_subaffiliation,
+            has_nested_affiliations=self.has_subaffiliation,
             language_code=self.language_code.code,
             linked_to_person=self.linked_to_person,
             url=self.url
         )
         # The list around raw_data is needed because we have scalar values
         return pd.DataFrame(data=[data])
+
