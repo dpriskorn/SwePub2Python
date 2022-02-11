@@ -27,14 +27,14 @@ class Extractor(BaseModel):
     swepub_deduplicated_zipfile_path: str = None
     article_pickle_filename: str = "articles.pkl.gz"
     subjects_pickle_filename: str = "subjects.pkl.gz"
-    stop_line_number: int = 100000
-    begin_line_number: int = 1
+    stop_line_number: int = config.stop_line_number
+    start_line_number: int = config.start_line_number
     show_progress_every_x_line: int = 10
 
     def extract(self):
         if self.swepub_deduplicated_zipfile_path is None:
             raise ValueError("swepub_deduplicated_zipfile_path was None")
-        if self.begin_line_number > self.stop_line_number:
+        if self.start_line_number > self.stop_line_number:
             raise ValueError("cannot begin higher than the stop line number")
         logger.info("Beginning extraction")
         start = time.time()
@@ -51,13 +51,13 @@ class Extractor(BaseModel):
                             # print(current_line_number)
                             # print(line)
                             if current_line_number % self.show_progress_every_x_line == 0:
-                                progress = round((current_line_number - self.begin_line_number) * 100 /
-                                                 (self.stop_line_number - self.begin_line_number))
+                                progress = round((current_line_number - self.start_line_number) * 100 /
+                                                 (self.stop_line_number - self.start_line_number))
                                 print(f"count:{current_line_number} duration:{round(time.time() - start)}s "
-                                      f"start:{self.begin_line_number} stop:{self.stop_line_number} "
+                                      f"start:{self.start_line_number} stop:{self.stop_line_number} "
                                       f"progress{progress}%",
                                       flush=True)
-                            if current_line_number >= self.begin_line_number:
+                            if current_line_number >= self.start_line_number:
                                 article = SwepubArticle(raw_data=line)
                                 df_article = article.export_dataframe()
                                 if article.subjects is not None:
