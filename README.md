@@ -2,6 +2,10 @@
 
 This tries to extract SwePub into Python objects to work on the data using Pandas
 
+## Downloading SwePub
+Use a FTP program and fetch the deduplicated file from here ftp://ftp.libris.kb.se/pub/spa/
+The whole file is about 2GB
+
 ## Issues in SwePub
 
 There is a lot of bloat in their choice of specification.
