@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "swepub2python"
+version = "0.1.0"
+description = "extract SwePub into Python objects to work on the data using Pandas"
+authors = ["Your Name <you@example.com>"]
+license = "GPLv3+"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.0"
+pydantic = "^2.6.1"
+click = "^8.1.7"
+langdetect = "^1.0.9"
+wikibaseintegrator = "^0.12.5"
+cache_to_disk = { git="https://github.com/dpriskorn/cache_to_disk", rev="ea25ce4ae74ca14cc14dd2542f2824aee7566281"}
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
