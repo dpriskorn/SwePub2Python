@@ -14,12 +14,13 @@ from models.swepub.contributor import SwepubContributor
 from models.swepub.language import SwepubLanguage
 from models.swepub.subject import SwepubSubject
 
-wbi_config.config['USER_AGENT'] = config.user_agent
+wbi_config.config["USER_AGENT"] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
 class SwepubArticle:
     """This class parses a Swepub article json into an object"""
+
     abstracts: Optional[List[str]] = None
     contributors: Optional[List[SwepubContributor]] = None
     detected_abstract_language: Optional[str] = None
@@ -67,14 +68,22 @@ class SwepubArticle:
                             if "label" in summaries[0]:
                                 first_summary = summaries[0]["label"]
                                 if len(first_summary.strip()) > 0:
-                                    logger.info(f"First abstract found: {first_summary}")
+                                    logger.info(
+                                        f"First abstract found: {first_summary}"
+                                    )
                                     try:
-                                        self.detected_abstract_language = detect(first_summary)
-                                        logger.info(f"Detected language of the "
-                                                    f"first abstract : {self.detected_abstract_language}")
+                                        self.detected_abstract_language = detect(
+                                            first_summary
+                                        )
+                                        logger.info(
+                                            f"Detected language of the "
+                                            f"first abstract : {self.detected_abstract_language}"
+                                        )
                                     except LangDetectException:
-                                        logger.error(f"Could not detect language"
-                                                     f"for summary: {first_summary}")
+                                        logger.error(
+                                            f"Could not detect language"
+                                            f"for summary: {first_summary}"
+                                        )
                                 else:
                                     logger.debug("First summary was empty.")
                         for summary in summaries:
@@ -133,8 +142,10 @@ class SwepubArticle:
                         elif identifier_type == "ISSN":
                             self.issn = value
                         else:
-                            logger.debug(f"Unsupported identifier_type {identifier_type} "
-                                           f"detected with value {value}")
+                            logger.debug(
+                                f"Unsupported identifier_type {identifier_type} "
+                                f"detected with value {value}"
+                            )
             else:
                 logger.info(f"No identifiedBy found under master for this article")
 
@@ -164,16 +175,22 @@ class SwepubArticle:
                                 if len(self.language_codes) == 1:
                                     logging.info(
                                         f"Title {title_label} found in work with "
-                                        f"the language {self.language_codes[0]}")
+                                        f"the language {self.language_codes[0]}"
+                                    )
                                 elif len(self.language_codes) > 1:
                                     logging.info(
                                         f"Title {title_label} found in work with one of "
-                                        f"the languages {self.language_codes}")
+                                        f"the languages {self.language_codes}"
+                                    )
                                 else:
-                                    logging.info(f"Title {title_label} found"
-                                                 f"in work with unknown language")
+                                    logging.info(
+                                        f"Title {title_label} found"
+                                        f"in work with unknown language"
+                                    )
                         else:
-                            logger.debug(f"No main title found for this article at {self.url}")
+                            logger.debug(
+                                f"No main title found for this article at {self.url}"
+                            )
                     self.number_of_titles = len(self.titles)
 
         def __parse_subjects__(instance_of: Any):
@@ -192,13 +209,15 @@ class SwepubArticle:
                             # pprint(subject_json_item)
                             subject = SwepubSubject(data=subject_json_item)
                             if subject.unnested_non_uka_labels is not None:
-                                logger.info(f"Unnesting {len(subject.unnested_non_uka_labels)} labels")
+                                logger.info(
+                                    f"Unnesting {len(subject.unnested_non_uka_labels)} labels"
+                                )
                                 for label in subject.unnested_non_uka_labels:
                                     logger.debug(f"unnesting label:{label}")
                                     unnested_subject = SwepubSubject(
                                         label=label,
                                         # Inherit the language code
-                                        language_code=subject.language_code
+                                        language_code=subject.language_code,
                                     )
                                     self.subjects.append(unnested_subject)
                             else:
@@ -244,7 +263,9 @@ class SwepubArticle:
         # https://stackoverflow.com/questions/26792852/multiple-values-in-single-column-of-a-pandas-dataframe
         # https://stackoverflow.com/questions/26483254/python-pandas-insert-list-into-a-cell#47548471
         if config.parse_contributors and config.parse_titles and config.parse_abstracts:
-            logger.info("Returning a dataframe with all information we currently support")
+            logger.info(
+                "Returning a dataframe with all information we currently support"
+            )
             if self.number_of_abstracts > 0:
                 first_abstract = self.abstracts[0]
             else:
@@ -278,7 +299,9 @@ class SwepubArticle:
             # The list around raw_data is needed because we have scalar values
             return pd.DataFrame(data=[data])  # , index=[count])
         else:
-            logger.info("Exporting a minimal dataframe with identifiers and language codes")
+            logger.info(
+                "Exporting a minimal dataframe with identifiers and language codes"
+            )
             data = dict(
                 doi=self.doi,
                 id=self.id,  # scalar value
@@ -307,9 +330,12 @@ class SwepubArticle:
     def non_swedish_subjects_non_uka_subjects(self):
         """This filters out all subjects with the language_code=swe and any uka_code set"""
         if self.subjects is not None:
-            return list(filter(lambda x: (x.language_code != "swe" and
-                                          x.uka_code is None),
-                               self.subjects))
+            return list(
+                filter(
+                    lambda x: (x.language_code != "swe" and x.uka_code is None),
+                    self.subjects,
+                )
+            )
         else:
             return list()
 
@@ -319,17 +345,15 @@ class SwepubArticle:
         if self.subjects is not None:
             return list(
                 filter(
-                    lambda x: (x.uka_code is not None and
-                               x.language_code != "swe"),
-                    self.subjects
+                    lambda x: (x.uka_code is not None and x.language_code != "swe"),
+                    self.subjects,
                 )
             )
         else:
             return list()
 
     def non_swedish_uka_subjects_with_specific_code_level(
-            self,
-            level: UKACodeLevel = None
+        self, level: UKACodeLevel = None
     ):
         """This returns all subjects that have a UKÄ classification code level
         specified by LEVEL but leaves out the ones with labels in Swedish"""
@@ -340,10 +364,12 @@ class SwepubArticle:
         if self.subjects is not None:
             return list(
                 filter(
-                    lambda x: (x.uka_code is not None and
-                               x.language_code != "swe" and
-                               x.uka_code_level == level),
-                    self.subjects
+                    lambda x: (
+                        x.uka_code is not None
+                        and x.language_code != "swe"
+                        and x.uka_code_level == level
+                    ),
+                    self.subjects,
                 )
             )
         else:
@@ -356,10 +382,7 @@ class SwepubArticle:
         else:
             return list()
 
-    def uka_subjects_with_specific_code_level(
-            self,
-            level: UKACodeLevel = None
-    ):
+    def uka_subjects_with_specific_code_level(self, level: UKACodeLevel = None):
         """This returns all subjects that have a UKÄ classification
         code level specified by LEVEL"""
         if level is None:
@@ -369,9 +392,8 @@ class SwepubArticle:
         if self.subjects is not None:
             return list(
                 filter(
-                    lambda x: (x.uka_code is not None and
-                               x.uka_code_level == level),
-                    self.subjects
+                    lambda x: (x.uka_code is not None and x.uka_code_level == level),
+                    self.subjects,
                 )
             )
         else:

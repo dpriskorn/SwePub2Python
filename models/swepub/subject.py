@@ -15,12 +15,13 @@ from helpers.util import yes_no_question
 from models.swedish_higher_education_authority import UKACodeLevel
 from models.swepub.language import SwepubLanguage
 
-wbi_config.config['USER_AGENT'] = config.user_agent
+wbi_config.config["USER_AGENT"] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
 class SwepubSubject:
     """This models a Swepub subject aka topic"""
+
     # FIXME update to pydantic
     # TODO decide whether to flesh out in own models UKACode or not
     data: Dict[str, str] = None
@@ -34,15 +35,19 @@ class SwepubSubject:
     matched_wikidata_qid: Optional[str] = None
     manually_matched: bool = False
 
-    def __init__(self,
-                 data: Dict[str, str] = None,
-                 label: str = None,
-                 language_code: SwepubLanguage = None):
+    def __init__(
+        self,
+        data: Dict[str, str] = None,
+        label: str = None,
+        language_code: SwepubLanguage = None,
+    ):
         if label is not None and language_code is not None:
             self.label = label
             self.language_code = language_code
         elif label is not None and language_code is None:
-            logger.debug("Language code was missing on this subject. Setting to UNDETERMINED")
+            logger.debug(
+                "Language code was missing on this subject. Setting to UNDETERMINED"
+            )
             self.label = label
             self.language_code = SwepubLanguage("und")
         else:
@@ -77,40 +82,44 @@ class SwepubSubject:
         #     'format': 'json'
         # }
         params = {
-            'action': 'wbsearchentities',
-            'search': topic,
-            'site': "enwiki",
+            "action": "wbsearchentities",
+            "search": topic,
+            "site": "enwiki",
             # hardcoded to English for now
-            'language': "en",
-            'strict_language': False,
-            'type': "item",
-            'limit': 1,
-            'format': 'json'
+            "language": "en",
+            "strict_language": False,
+            "type": "item",
+            "limit": 1,
+            "format": "json",
         }
         logger.info("Running search entities query on the Wikidata API")
         try:
-            search_results = mediawiki_api_call_helper(data=params, allow_anonymous=True)
+            search_results = mediawiki_api_call_helper(
+                data=params, allow_anonymous=True
+            )
         except MWApiError:
             logger.error(f"Got {MWApiError} for {topic}")
             search_results = None
         if search_results is not None:
-            if search_results['success'] != 1:
-                raise SearchError('Wikibase API wbsearchentities failed')
+            if search_results["success"] != 1:
+                raise SearchError("Wikibase API wbsearchentities failed")
             dict_result: bool = True
             results = []
-            for i in search_results['search']:
+            for i in search_results["search"]:
                 if dict_result:
-                    description = i['description'] if 'description' in i else None
-                    aliases = i['aliases'] if 'aliases' in i else None
-                    results.append({
-                        'id': i['id'],
-                        'label': i['label'],
-                        'match': i['match'],
-                        'description': description,
-                        'aliases': aliases
-                    })
+                    description = i["description"] if "description" in i else None
+                    aliases = i["aliases"] if "aliases" in i else None
+                    results.append(
+                        {
+                            "id": i["id"],
+                            "label": i["label"],
+                            "match": i["match"],
+                            "description": description,
+                            "aliases": aliases,
+                        }
+                    )
                 else:
-                    results.append(i['id'])
+                    results.append(i["id"])
             return results
 
     def __ask_for_approval__(self, qid: str = None):
@@ -149,8 +158,10 @@ class SwepubSubject:
                 qid = results[0]["id"]
                 label = results[0]["label"]
                 description = results[0]["description"]
-                print(f"We found exactly one result for '{self.label}': "
-                      f"'{label}' with the description: '{description}' (see QID {qid})")
+                print(
+                    f"We found exactly one result for '{self.label}': "
+                    f"'{label}' with the description: '{description}' (see QID {qid})"
+                )
                 self.__ask_for_approval__(qid=qid)
             elif results_length > 1:
                 # TODO present choice to user and give them a
@@ -160,9 +171,11 @@ class SwepubSubject:
                 qid = results[0]["id"]
                 label = results[0]["label"]
                 description = results[0]["description"]
-                print(f"Got {results_length} matches for '{self.label}' and "
-                      f"auto-picked the first one '{label}' with the "
-                      f"description: '{description}' (see QID {qid})")
+                print(
+                    f"Got {results_length} matches for '{self.label}' and "
+                    f"auto-picked the first one '{label}' with the "
+                    f"description: '{description}' (see QID {qid})"
+                )
                 self.__ask_for_approval__(qid=qid)
             else:
                 logger.warning(f"Got zero results from Wikidata for '{self.label}'")
@@ -204,7 +217,9 @@ class SwepubSubject:
                 else:
                     logger.warning("Unrecognized length of UKÄ code: {code}")
             else:
-                logger.debug(f"Code {code} in unsupported scheme {scheme_code} detected")
+                logger.debug(
+                    f"Code {code} in unsupported scheme {scheme_code} detected"
+                )
         if "prefLabel" in data:
             code_label = data["prefLabel"]
             if self.uka_scheme:
@@ -223,14 +238,16 @@ class SwepubSubject:
                 self.language_code = SwepubLanguage(code=language["code"])
             else:
                 logger.warning(
-                    f"No language code found for the language {language} of this subject")
+                    f"No language code found for the language {language} of this subject"
+                )
         if self.uka_scheme and self.uka_label and self.uka_code:
-            logging.info(f"Found UKÄ 2016 code {self.uka_code} with label "
-                         f"{self.uka_label} in the language {self.language_code}")
+            logging.info(
+                f"Found UKÄ 2016 code {self.uka_code} with label "
+                f"{self.uka_label} in the language {self.language_code}"
+            )
         else:
             if self.uka_code:
-                logging.debug(
-                    f'Found UKÄ code but no label: {self.uka_code}')
+                logging.debug(f"Found UKÄ code but no label: {self.uka_code}")
 
     def __str__(self):
         if self.uka_scheme:
@@ -242,9 +259,11 @@ class SwepubSubject:
                 language = "no language code found"
             else:
                 language = self.language_code.label
-            return (f"{prefix}: "
-                    f"{self.uka_label} ({language})\n"
-                    f"UKÄ level {self.uka_code_level.value}: {self.uka_code}\n")
+            return (
+                f"{prefix}: "
+                f"{self.uka_label} ({language})\n"
+                f"UKÄ level {self.uka_code_level.value}: {self.uka_code}\n"
+            )
         else:
             logging.info("__str__:Detected Non-UKÄ scheme")
             prefix = "Non-UKÄ"
@@ -254,8 +273,7 @@ class SwepubSubject:
                     language = "no language code found"
                 else:
                     language = self.language_code.label
-                return (f"{prefix}: "
-                        f"{self.label} ({language})")
+                return f"{prefix}: " f"{self.label} ({language})"
             else:
                 raise ValueError(f"Could not print this subject {dict(self.data)}")
 

@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 def read_from_cache(
-        label: str = None,
-        qid: str = None,
+    label: str = None,
+    qid: str = None,
 ):
     """Returns None or result from the cache"""
     if label is None or qid is None:
@@ -20,7 +20,7 @@ def read_from_cache(
     if exists("cache.pkl"):
         df = pd.read_pickle("cache.pkl")
         # This tests whether any row matches
-        match = ((df['qid'] == qid) & (df['label'] == label)).any()
+        match = ((df["qid"] == qid) & (df["label"] == label)).any()
         logger.debug(f"match:{match}")
         if match:
             # Here we find the row that matches and extract the
@@ -31,11 +31,7 @@ def read_from_cache(
                 return result
 
 
-def add_to_cache(
-        label: str = None,
-        qid: str = None,
-        result: bool = None
-):
+def add_to_cache(label: str = None, qid: str = None, result: bool = None):
     if label is None or qid is None or result is None:
         raise ValueError("did not get all we need")
     logger.debug("Adding to cache")
@@ -43,7 +39,7 @@ def add_to_cache(
     if exists("cache.pkl"):
         df = pd.read_pickle("cache.pkl")
         # This tests whether any row matches
-        match = ((df['qid'] == qid) & (df['label'] == label)).any()
+        match = ((df["qid"] == qid) & (df["label"] == label)).any()
         logger.debug(f"match:{match}")
         if not match:
             # We only give save the value once for now

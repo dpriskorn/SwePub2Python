@@ -1,32 +1,25 @@
 import logging
 
-# import click
-
 import config
 from models.extractor import Extractor
-from models.swepub.dataframe import SwepubDataframe
+import sys
 
 logging.basicConfig(level=config.loglevel)
 
-# @click.option('--extract', help='Extract SwePub zip to Python objects in a dataframe')
-# @click.option('--export-subjects', help='Export the subjects in a dataframe')
 
-# @click.command()
-def extract_to_dataframes():
-    extractor = Extractor(swepub_deduplicated_zipfile_path='swepub-deduplicated.zip')
+def extract_to_dataframes(zipfile_path):
+    extractor = Extractor(swepub_deduplicated_zipfile_path=zipfile_path)
     extractor.extract()
 
 
-# @click.command()
-# def export_subjects():
-#     sdf = SwepubDataframe()
-#     sdf.load_into_memory()
-#     sdf.export_subjects_dataframe()
-
-
 def main():
-    extract_to_dataframes()
+    if len(sys.argv) != 2:
+        print("Usage: python script_name.py <zipfile_path>")
+        sys.exit(1)
+
+    zipfile_path = sys.argv[1]
+    extract_to_dataframes(zipfile_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

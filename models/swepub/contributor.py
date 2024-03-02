@@ -8,12 +8,13 @@ from wikibaseintegrator import wbi_config  # type: ignore
 import config
 from models.swepub.affiliation import SwepubAffiliation
 
-wbi_config.config['USER_AGENT'] = config.user_agent
+wbi_config.config["USER_AGENT"] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
 class SwepubContributor:
     """This models the contributor aka author in the Swepub raw_data"""
+
     given_name: Optional[str] = None
     family_name: Optional[str] = None
     affiliations: List[SwepubAffiliation]
@@ -58,13 +59,17 @@ class SwepubContributor:
                                 elif identifier_type == "ORCID":
                                     self.orcid = value
                                 else:
-                                    logger.debug(f"unsupported identifier {identifier_type} in swepub agent")
+                                    logger.debug(
+                                        f"unsupported identifier {identifier_type} in swepub agent"
+                                    )
                 elif affiliation_type == "Organization":
                     # print("agent:")
                     # pprint(agent)
                     self.affiliations.append(SwepubAffiliation(affiliation=agent))
                 else:
-                    logger.debug(f"unsupported affiliation type {affiliation_type} in swepub agent")
+                    logger.debug(
+                        f"unsupported affiliation type {affiliation_type} in swepub agent"
+                    )
         if "hasAffiliation" in contributor_data:
             # This affiliation is not linked to a person. Why? Bad raw_data?
             affiliations_data = contributor_data["hasAffiliation"]
@@ -72,21 +77,22 @@ class SwepubContributor:
             # pprint(affiliation)
             # exit(0)
             for affiliation_data in affiliations_data:
-                affiliation = SwepubAffiliation(affiliation=affiliation_data,
-                                                linked_to_person=False)
+                affiliation = SwepubAffiliation(
+                    affiliation=affiliation_data, linked_to_person=False
+                )
                 # Unnest the subaffiliations
-                if affiliation.has_subaffiliation and affiliation.subaffiliations is not None:
+                if (
+                    affiliation.has_subaffiliation
+                    and affiliation.subaffiliations is not None
+                ):
                     for subaffiliation_data in affiliation.subaffiliations:
-                        subaffiliation = SwepubAffiliation(subaffiliation_data,
-                                                           linked_to_person=False)
-                        self.affiliations.append(
-                            subaffiliation
+                        subaffiliation = SwepubAffiliation(
+                            subaffiliation_data, linked_to_person=False
                         )
+                        self.affiliations.append(subaffiliation)
                 # Save memory by deleting the json raw_data
                 affiliation.subaffiliations = None
-                self.affiliations.append(
-                    affiliation
-                )
+                self.affiliations.append(affiliation)
         # exit(0)
 
     def full_name(self):

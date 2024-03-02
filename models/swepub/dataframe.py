@@ -22,9 +22,7 @@ class SwepubDataframe(BaseModel):
         df_subjects = pd.DataFrame()
         for list in self.dataframe["subjects"]:
             for item in list:
-                df_subjects = df_subjects.append(
-                    item.export_dataframe()
-                )
+                df_subjects = df_subjects.append(item.export_dataframe())
         df_subjects.to_pickle(pickle_filename)
         print(df_subjects.describe())
         print(df_subjects.sample(3))

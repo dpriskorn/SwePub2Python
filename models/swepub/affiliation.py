@@ -9,12 +9,13 @@ from wikibaseintegrator import wbi_config  # type: ignore
 import config
 from models.swepub.language import SwepubLanguage
 
-wbi_config.config['USER_AGENT'] = config.user_agent
+wbi_config.config["USER_AGENT"] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
 class SwepubAffiliation:
     """This models the affiliation aka organization and departments of authors in the Swepub raw_data"""
+
     name: Optional[str] = None
     language_code: Optional[SwepubLanguage] = None
     local_identifier: str = None
@@ -24,9 +25,7 @@ class SwepubAffiliation:
     url: Optional[str] = None
 
     def __init__(
-            self,
-            affiliation: Dict[str, Any] = None,
-            linked_to_person: bool = True
+        self, affiliation: Dict[str, Any] = None, linked_to_person: bool = True
     ):
         self.linked_to_person = linked_to_person
         if isinstance(affiliation, list):
@@ -36,7 +35,7 @@ class SwepubAffiliation:
     def __parse__(self, affiliation):
         if affiliation is None:
             raise ValueError("affiliation was None")
-        #pprint(affiliation)
+        # pprint(affiliation)
         if "@type" in affiliation:
             affiliation_type: str = affiliation["@type"]
             if affiliation_type.strip() == "Organization":
@@ -57,9 +56,12 @@ class SwepubAffiliation:
                         self.language_code = SwepubLanguage(code="und")
                         logger.debug(
                             f"No language code found for the language {language} "
-                            f"of this organization name")
+                            f"of this organization name"
+                        )
                 else:
-                    logger.debug(f"language was missing for this organization {self.name}, setting to 'und'")
+                    logger.debug(
+                        f"language was missing for this organization {self.name}, setting to 'und'"
+                    )
                     self.language_code = SwepubLanguage(code="und")
                 if "identifiedBy" in affiliation:
                     identifiers = affiliation["identifiedBy"]
@@ -70,9 +72,11 @@ class SwepubAffiliation:
                             if identifier_type == "Local":
                                 self.local_identifier = value
                             elif identifier_type == "URI":
-                                    self.url = value
+                                self.url = value
                             else:
-                                logger.debug(f"unsupported identifier {identifier_type} in swepub affiliation")
+                                logger.debug(
+                                    f"unsupported identifier {identifier_type} in swepub affiliation"
+                                )
             else:
                 logger.debug(f"unsupported affiliation type {affiliation_type} found")
         if "hasAffiliation" in affiliation:
@@ -81,11 +85,13 @@ class SwepubAffiliation:
             subaffiliations: List[Dict[str, Any]] = affiliation["hasAffiliation"]
             for subaffiliation in subaffiliations:
                 self.subaffiliations.append(subaffiliation)
-            logger.info(f"{len(self.subaffiliations)} subaffiliation(s) found for {self.name}")
+            logger.info(
+                f"{len(self.subaffiliations)} subaffiliation(s) found for {self.name}"
+            )
         if self.name is None:
             logger.debug("no name found on this affiliation")
-            #print(self)
-            #exit()
+            # print(self)
+            # exit()
 
     def __str__(self):
         if self.language_code is None:
@@ -101,8 +107,7 @@ class SwepubAffiliation:
             has_nested_affiliations=self.has_subaffiliation,
             language_code=self.language_code.code,
             linked_to_person=self.linked_to_person,
-            url=self.url
+            url=self.url,
         )
         # The list around raw_data is needed because we have scalar values
         return pd.DataFrame(data=[data])
-

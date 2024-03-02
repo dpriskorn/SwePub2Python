@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 # This file is huge. 1.3GB gzipped json
-name = f'{Path.home()}/WikidataMLSuggester/swepub-deduplicated.zip'
+name = f"{Path.home()}/WikidataMLSuggester/swepub-deduplicated.zip"
 
 # There is a lot of bloat in their choice of specification.
 # E.g. titles of all the UKÄ codes could have been left out
@@ -31,6 +31,9 @@ with zipfile.ZipFile(name) as z:
                 for line in f:
                     count += 1
                     if count % 100000 == 0:
-                        print(f"count:{count} duration:{round(time.time() - start)}s", flush=True)
+                        print(
+                            f"count:{count} duration:{round(time.time() - start)}s",
+                            flush=True,
+                        )
 end = time.time()
 print(f"total duration: {round(end - start)}s")

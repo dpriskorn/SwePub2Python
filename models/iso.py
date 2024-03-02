@@ -7,20 +7,20 @@ from wikibaseintegrator.wbi_helpers import execute_sparql_query  # type: ignore
 import config
 from helpers.wdqs import extract_the_first_wikibase_value_from_a_wdqs_result_set
 
-wbi_config.config['USER_AGENT'] = config.user_agent
+wbi_config.config["USER_AGENT"] = config.user_agent
 logger = logging.getLogger(__name__)
 
 
 class IsoThreeLetterLanguageCode:
     """Official ISO 639-2 support"""
+
     code: str = None
     # We use str instead of LanguageValue here to enable
     # caching to disk using a decorator
     label: str = None
     wikidata_qid: str = None
 
-    def __init__(self,
-                 code: str):
+    def __init__(self, code: str):
         if code is None:
             raise ValueError("code was None")
         else:
@@ -41,7 +41,8 @@ class IsoThreeLetterLanguageCode:
             {{
               ?item wdt:P219 "{code}".
             }}
-            """)
+            """
+        )
 
     @cache_to_disk(50)
     def __lookup_label_using_wbi__(self, item: str = None):
@@ -63,8 +64,7 @@ class IsoThreeLetterLanguageCode:
         if result is not None:
             logger.debug(f"wbi result:{result}")
             self.wikidata_qid = extract_the_first_wikibase_value_from_a_wdqs_result_set(
-                json=result,
-                sparql_variable="item"
+                json=result, sparql_variable="item"
             )
         if self.wikidata_qid is not None:
             self.label = self.__lookup_label_using_wbi__(item=self.wikidata_qid)
@@ -78,8 +78,10 @@ class IsoThreeLetterLanguageCode:
             elif self.code == "scc":
                 self.label = "Undetermined"
             else:
-                logger.error(f"no item found for ISO 639-2 code '{self.code}' in Wikidata, "
-                             f"falling back to 'undetermined'")
+                logger.error(
+                    f"no item found for ISO 639-2 code '{self.code}' in Wikidata, "
+                    f"falling back to 'undetermined'"
+                )
                 self.label = "Undetermined"
 
     def __str__(self):

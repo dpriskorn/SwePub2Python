@@ -5,8 +5,7 @@ import config
 
 
 def extract_the_first_wikibase_value_from_a_wdqs_result_set(
-        json: Dict = None,
-        sparql_variable: str = None
+    json: Dict = None, sparql_variable: str = None
 ) -> str:
     """Extract a value from a sparql-variable defined in SELECT"""
     logger = logging.getLogger(__name__)
