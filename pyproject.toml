@@ -16,7 +16,7 @@ wikibaseintegrator = "^0.12.5"
 cache_to_disk = { git="https://github.com/dpriskorn/cache_to_disk", rev="ea25ce4ae74ca14cc14dd2542f2824aee7566281"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.1.1"
+black = "^24.3.0"
 
 [build-system]
 requires = ["poetry-core"]
